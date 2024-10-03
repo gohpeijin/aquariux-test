@@ -1,5 +1,7 @@
 package com.example.demo.Enum;
 
+import java.util.Arrays;
+
 public enum Symbol {
     ETHUSDT,
     BTCUSDT;
@@ -10,6 +12,6 @@ public enum Symbol {
                 return symbol;
             }
         }
-        throw new IllegalArgumentException("No enum constant for string: " + symbolString);
+        throw new IllegalArgumentException("Invalid symbol: " + symbolString + ". Valid options are: " + Arrays.toString(Symbol.values()));
     }
 }

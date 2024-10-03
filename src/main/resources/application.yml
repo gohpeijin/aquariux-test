@@ -25,5 +25,3 @@ logging:
 
 cron:
   price-aggregator-scheduler: "*/10 * * * * *"
-
-debug: true

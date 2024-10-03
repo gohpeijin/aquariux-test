@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -33,9 +34,16 @@ public class TransactionController {
         return ResponseEntity.ok(transactionHistory);
     }
 
-    @GetMapping("/price/get-latest-best-aggregated-price")
+    @GetMapping("/get-latest-best-aggregated-price")
     public ResponseEntity<List<AggregatedPrice>> getLatestBestAggregatedPrice() {
         List<AggregatedPrice> latestPrices = aggregationService.getLatestPricesForAllSymbols();
         return latestPrices.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(latestPrices);
     }
+
+    @GetMapping("/get-latest-best-aggregated-price/{symbol}")
+    public ResponseEntity<AggregatedPrice> getLatestPriceBySymbol(@PathVariable String symbol) {
+        Optional<AggregatedPrice> latestPrice = aggregationService.getLatestAggregatedPriceBySymbol(symbol);
+        return latestPrice.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }
