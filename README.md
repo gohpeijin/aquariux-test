@@ -17,9 +17,11 @@ API link via postman: https://www.postman.com/avionics-astronomer-21090150/aquar
 ![mssg-when-symbol-not-available](screenshots/task2-mssg.png)
 
 3. trade based on the latest best aggregated price
+![trade](screenshots/task3-trade.png)
 
 4. retrieve the user’s cryptocurrencies wallet balance
 ![wallet-balance](screenshots/task4-wallet-balance.png)
 
 5. retrieve the user trading history
 ![trading-history](screenshots/task5-trading-history.png)
+
