@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface AggregatedPriceRepository extends JpaRepository<AggregatedPrice, Long> {
+    AggregatedPrice findTopByOrderByCreatedDateDesc();
     Optional<AggregatedPrice> findFirstBySymbolOrderByCreatedDateDesc(@Param("symbol") Symbol symbol);
 
     @Query("SELECT ap FROM AggregatedPrice ap WHERE ap.createdDate = (SELECT MAX(sub.createdDate) FROM AggregatedPrice sub WHERE sub.symbol = ap.symbol)")

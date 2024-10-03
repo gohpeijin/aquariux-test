@@ -1,7 +1,5 @@
 package com.example.demo.data;
 
-import com.example.demo.DTO.TransactionHistoryDTO;
-import com.example.demo.DTO.WalletDTO;
 import com.example.demo.Enum.TransactionType;
 import com.example.demo.entity.TransactionHistory;
 import com.example.demo.entity.User;
@@ -65,8 +63,7 @@ public class DataInitializer implements CommandLineRunner {
         transaction.setUser(user);
         transaction.setWallet(wallet);
         transaction.setTransactionType(TransactionType.BTC_TO_USDT); // Example transaction type
-        transaction.setSellAmount(new BigDecimal("0.5")); // Selling 0.5 BTC
-        transaction.setBuyAmount(new BigDecimal("10000")); // Buying 10000 USDT
+        transaction.setBuyAmount(new BigDecimal("50000")); // Buying 10000 USDT
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setStatus("SUCCESS");
 
@@ -78,15 +75,15 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Sample data retrieval.");
         // Retrieve and log the saved user and wallet data
         User savedUser = userRepository.findById(user.getUserId()).orElse(null);
-        WalletDTO savedWallet = walletService.findByUserId(user.getUserId());
+        Wallet savedWallet = walletService.findByUserId(user.getUserId());
 
         // Correctly use the injected instance to call the method
-        List<TransactionHistoryDTO> transactionHistoryDTO = transactionHistoryService.findByUserId(user.getUserId());
+        List<TransactionHistory> transactionHistoryDTO = transactionHistoryService.findByUserId(user.getUserId());
 
         // Convert to JSON and log
         logger.info("Sample User Data: {}", objectMapper.writeValueAsString(savedUser));
         logger.info("Sample Wallet Data: {}", objectMapper.writeValueAsString(savedWallet));
-        logger.info("Transaction History DTO : {}", objectMapper.writeValueAsString(transactionHistoryDTO)); // Log transaction history
+        logger.info("Transaction History Data : {}", objectMapper.writeValueAsString(transactionHistoryDTO)); // Log transaction history
 
         System.out.println("Sample data has been injected and retrieved.");
     }

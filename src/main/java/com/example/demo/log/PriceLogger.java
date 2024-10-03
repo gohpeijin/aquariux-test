@@ -14,7 +14,7 @@ import java.util.List;
 public class PriceLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(PriceLogger.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);;
+    private static final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     // Method to log the Huobi prices
     public void logHuobiPrices(List<Huobi> HuobiPrices) {

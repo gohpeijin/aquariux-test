@@ -3,16 +3,14 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "wallets")
 public class Wallet extends Auditable{
 
@@ -22,7 +20,12 @@ public class Wallet extends Auditable{
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
+    @JsonBackReference // Prevent circular reference, will not be serialized
     private User user;
+
+    // One-to-Many relationship with TransactionHistory
+    @OneToMany(mappedBy = "wallet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TransactionHistory> transactions = new ArrayList<>();
 
     @Column(nullable = false)
     private BigDecimal usdt;
@@ -33,19 +36,11 @@ public class Wallet extends Auditable{
     @Column(nullable = false)
     private BigDecimal eth;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     // Constructor
     public Wallet() {
         this.usdt = BigDecimal.ZERO;
         this.btc = BigDecimal.ZERO;
         this.eth = BigDecimal.ZERO;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -71,7 +66,7 @@ public class Wallet extends Auditable{
 
     public void setUsdt(BigDecimal usdt) {
         this.usdt = usdt;
-        this.updatedAt = LocalDateTime.now(); // Update timestamp on change
+        this.lastModifiedDate = LocalDateTime.now(); // Update timestamp on change
     }
 
     public BigDecimal getBtc() {
@@ -80,7 +75,7 @@ public class Wallet extends Auditable{
 
     public void setBtc(BigDecimal btc) {
         this.btc = btc;
-        this.updatedAt = LocalDateTime.now(); // Update timestamp on change
+        this.lastModifiedDate = LocalDateTime.now(); // Update timestamp on change
     }
 
     public BigDecimal getEth() {
@@ -89,22 +84,6 @@ public class Wallet extends Auditable{
 
     public void setEth(BigDecimal eth) {
         this.eth = eth;
-        this.updatedAt = LocalDateTime.now(); // Update timestamp on change
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+        this.lastModifiedDate = LocalDateTime.now(); // Update timestamp on change
     }
 }

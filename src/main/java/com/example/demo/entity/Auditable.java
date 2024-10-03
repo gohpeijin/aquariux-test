@@ -10,8 +10,6 @@ import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
@@ -22,12 +20,12 @@ public class Auditable {
     //  @CreatedDate
     @JsonIgnore
     @Column(name = "created_date", updatable = false)
-    private LocalDateTime createdDate;
+    protected LocalDateTime createdDate;
 
     //  @LastModifiedDate
     @JsonIgnore
     @Column(name = "last_modified_date")
-    private LocalDateTime lastModifiedDate;
+    protected LocalDateTime lastModifiedDate;
 
     @PrePersist
     protected void onCreate() {

@@ -5,7 +5,7 @@ import com.example.demo.Enum.Symbol;
 import com.example.demo.client.BinanceClient;
 import com.example.demo.client.HuobiClient;
 import com.example.demo.entity.AggregatedPrice;
-import com.example.demo.mapper.AggregatedPriceMapper;
+import com.example.demo.log.PriceLogger;
 import com.example.demo.repository.AggregatedPriceRepository;
 
 import java.util.List;
@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import com.example.demo.model.Binance;
 import com.example.demo.model.Huobi;
 
-import com.example.demo.log.PriceLogger;
-
 @Service
 public class AggregationService {
 
@@ -30,15 +28,11 @@ public class AggregationService {
 
     private final AggregatedPriceRepository aggregatedPriceRepository;
 
-    private final AggregatedPriceMapper aggregatedPriceMapper;
-
     @Autowired
     public AggregationService(AggregatedPriceRepository aggregatedPriceRepository,
-                              AggregatedPriceMapper aggregatedPriceMapper,
                               BinanceClient binanceClient,
                               HuobiClient huobiClient) {
         this.aggregatedPriceRepository = aggregatedPriceRepository;
-        this.aggregatedPriceMapper = aggregatedPriceMapper;
         this.binanceClient = binanceClient;
         this.huobiClient = huobiClient;
         this.priceLogger = new PriceLogger();

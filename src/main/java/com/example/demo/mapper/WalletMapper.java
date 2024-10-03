@@ -15,6 +15,7 @@ public interface WalletMapper {
     @Mapping(source = "usdt", target = "usdt")
     @Mapping(source = "btc", target = "btc")
     @Mapping(source = "eth", target = "eth")
+    @Mapping(source = "walletId", target = "walletId")
     WalletDTO toDTO(Wallet wallet);
 
     @Mapping(source = "userId", target = "user.userId") 
@@ -22,5 +23,6 @@ public interface WalletMapper {
     @Mapping(source = "usdt", target = "usdt")
     @Mapping(source = "btc", target = "btc")
     @Mapping(source = "eth", target = "eth")
+    @Mapping(source = "walletId", target = "walletId")
     Wallet toEntity(WalletDTO walletDTO);
 }
