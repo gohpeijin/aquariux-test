@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Binance;
 import com.example.demo.model.Huobi;
-import com.example.demo.model.AggregatedPriceDTO;
 import com.example.demo.service.AggregationService;
 
 import java.util.List;
@@ -52,11 +51,6 @@ public class WalletController {
     @GetMapping("huobiBtcEth")
     public List<Huobi> HuobiTradingPairs() {
         return aggregationService.HuobiPairs();
-    }
-
-    @GetMapping("bestAggregatedPrice")
-    public List<AggregatedPriceDTO> bestAggregatedPrice() {
-        return aggregationService.saveBestAggregatedPrice();
     }
 
     @GetMapping("/{userId}")

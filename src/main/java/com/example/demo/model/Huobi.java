@@ -1,140 +1,53 @@
 package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Huobi {
 
     @JsonProperty("symbol")
     private String symbol;
 
     @JsonProperty("open")
-    private double open;
+    private BigDecimal open;
 
     @JsonProperty("high")
-    private double high;
+    private BigDecimal high;
 
     @JsonProperty("low")
-    private double low;
+    private BigDecimal low;
 
     @JsonProperty("close")
-    private double close;
+    private BigDecimal close;
 
     @JsonProperty("amount")
-    private double amount;
+    private BigDecimal amount;
 
     @JsonProperty("vol")
-    private double vol;
+    private BigDecimal vol;
 
     @JsonProperty("count")
-    private double count;
+    private BigDecimal count;
 
     @JsonProperty("bid")
-    private double bid;
+    private BigDecimal bid;
 
     @JsonProperty("bidSize")
-    private double bidSize;
+    private BigDecimal bidSize;
 
     @JsonProperty("ask")
-    private double ask;
+    private BigDecimal ask;
 
     @JsonProperty("askSize")
-    private double askSize;
+    private BigDecimal askSize;
 
-    // Getters and Setters
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public double getOpen() {
-        return open;
-    }
-
-    public void setOpen(double open) {
-        this.open = open;
-    }
-
-    public double getHigh() {
-        return high;
-    }
-
-    public void setHigh(double high) {
-        this.high = high;
-    }
-
-    public double getLow() {
-        return low;
-    }
-
-    public void setLow(double low) {
-        this.low = low;
-    }
-
-    public double getClose() {
-        return close;
-    }
-
-    public void setClose(double close) {
-        this.close = close;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public double getVol() {
-        return vol;
-    }
-
-    public void setVol(double vol) {
-        this.vol = vol;
-    }
-
-    public double getCount() {
-        return count;
-    }
-
-    public void setCount(double count) {
-        this.count = count;
-    }
-
-    public double getBid() {
-        return bid;
-    }
-
-    public void setBid(double bid) {
-        this.bid = bid;
-    }
-
-    public double getBidSize() {
-        return bidSize;
-    }
-
-    public void setBidSize(double bidSize) {
-        this.bidSize = bidSize;
-    }
-
-    public double getAsk() {
-        return ask;
-    }
-
-    public void setAsk(double ask) {
-        this.ask = ask;
-    }
-
-    public double getAskSize() {
-        return askSize;
-    }
-
-    public void setAskSize(double askSize) {
-        this.askSize = askSize;
-    }
 }

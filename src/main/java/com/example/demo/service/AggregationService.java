@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.Enum.Source;
+import com.example.demo.Enum.Symbol;
 import com.example.demo.entity.AggregatedPrice;
 import com.example.demo.mapper.AggregatedPriceMapper;
 import com.example.demo.repository.AggregatedPriceRepository;
@@ -19,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import com.example.demo.model.Binance;
 import com.example.demo.model.Huobi;
 import com.example.demo.model.HuobiResponse;
-import com.example.demo.model.AggregatedPriceDTO;
 
 import com.example.demo.log.PriceLogger;
 
@@ -53,15 +53,14 @@ public class AggregationService {
         return aggregatedPriceRepository.findFirstBySymbolOrderByCreatedDateDesc(symbol);
     }
 
-    // Method to find and compare pairs from the two lists
-    public List<AggregatedPriceDTO> saveBestAggregatedPrice() {
-        List<Huobi> HuobiPrices = this.HuobiPairs();
-        List<Binance> BinancePrices = this.BinancePairs();
+    public List<AggregatedPrice> saveBestAggregatedPrice() {
+        List<Huobi> huobiPrices = this.HuobiPairs();
+        List<Binance> binancePrices = this.BinancePairs();
         // Map each Huobi symbol to the best price by finding the corresponding Binance price
-        List<AggregatedPriceDTO> res = HuobiPrices.stream()
+        List<AggregatedPrice> entities = huobiPrices.stream()
                 .map(HuobiPrice -> {
                     // Find corresponding Binance price by symbol
-                    Optional<Binance> matchingBinancePrice = BinancePrices.stream()
+                    Optional<Binance> matchingBinancePrice = binancePrices.stream()
                             .filter(BinancePrice -> BinancePrice.getSymbol().equalsIgnoreCase(HuobiPrice.getSymbol()))
                             .findFirst();
 
@@ -72,47 +71,41 @@ public class AggregationService {
                 .filter(bestPrice -> bestPrice != null)  // Filter out nulls
                 .collect(Collectors.toList());  // Collect the best aggregated prices into a list
 
-        // Use the mapper to convert DTO to Entity
-// Map each AggregatedPriceDTO to AggregatedPrice entity
-        List<AggregatedPrice> entities = res.stream()
-                .map(aggregatedPriceMapper::toEntity)
-                .collect(Collectors.toList());
-// Save all entities to the database
         aggregatedPriceRepository.saveAll(entities);
         // Log each set of prices
-        priceLogger.logHuobiPrices(HuobiPrices);
-        priceLogger.logBinancePrices(BinancePrices);
-        priceLogger.logAggregatedPrices(res);
-        return res;
+        priceLogger.logHuobiPrices(huobiPrices);
+        priceLogger.logBinancePrices(binancePrices);
+        priceLogger.logAggregatedPrices(entities);
+        return entities;
     }
 
 
-    public AggregatedPriceDTO comparePrices(Huobi HuobiPrice, Binance BinancePrice, String symbol) {
-        AggregatedPriceDTO bestPrice = new AggregatedPriceDTO();
-        bestPrice.setSymbol(symbol);
+    public AggregatedPrice comparePrices(Huobi huobiPrice, Binance binancePrice, String symbol) {
+        AggregatedPrice bestPrice = new AggregatedPrice();
+        bestPrice.setSymbol(Symbol.fromString(symbol));
 
         // Ensure both symbols are the same
-        if (HuobiPrice.getSymbol().equalsIgnoreCase(symbol) && BinancePrice.getSymbol().equalsIgnoreCase(symbol)) {
+        if (huobiPrice.getSymbol().equalsIgnoreCase(symbol) && binancePrice.getSymbol().equalsIgnoreCase(symbol)) {
             // Compare bid prices (higher is better for selling)
-            if (HuobiPrice.getBid() > BinancePrice.getBidPrice()) {
-                bestPrice.setBidPrice(HuobiPrice.getBid());
-                bestPrice.setBidQty(HuobiPrice.getBidSize());
-                bestPrice.setBidSource(Source.HUOBI.name());
+            if (huobiPrice.getBid().compareTo(binancePrice.getBidPrice()) > 0) {
+                bestPrice.setBidPrice(huobiPrice.getBid());
+                bestPrice.setBidQty(huobiPrice.getBidSize());
+                bestPrice.setBidSource(Source.HUOBI);
             } else {
-                bestPrice.setBidPrice(BinancePrice.getBidPrice());
-                bestPrice.setBidQty(BinancePrice.getBidQty());
-                bestPrice.setBidSource(Source.BINANCE.name());
+                bestPrice.setBidPrice(binancePrice.getBidPrice());
+                bestPrice.setBidQty(binancePrice.getBidQty());
+                bestPrice.setBidSource(Source.BINANCE);
             }
 
             // Compare ask prices (lower is better for buying)
-            if (HuobiPrice.getAsk() < BinancePrice.getAskPrice()) {
-                bestPrice.setAskPrice(HuobiPrice.getAsk());
-                bestPrice.setAskQty(HuobiPrice.getAskSize());
-                bestPrice.setAskSource(Source.HUOBI.name());
+            if (huobiPrice.getAsk().compareTo(binancePrice.getAskPrice()) < 0) {
+                bestPrice.setAskPrice(huobiPrice.getAsk());
+                bestPrice.setAskQty(huobiPrice.getAskSize());
+                bestPrice.setAskSource(Source.HUOBI);
             } else {
-                bestPrice.setAskPrice(BinancePrice.getAskPrice());
-                bestPrice.setAskQty(BinancePrice.getAskQty());
-                bestPrice.setAskSource(Source.BINANCE.name());
+                bestPrice.setAskPrice(binancePrice.getAskPrice());
+                bestPrice.setAskQty(binancePrice.getAskQty());
+                bestPrice.setAskSource(Source.BINANCE);
             }
         }
 
@@ -123,7 +116,7 @@ public class AggregationService {
         List<Binance> all = this.BinanceCall();
         // Filtering based on symbol
         return all.stream()
-                .filter(b -> b.getSymbol().equalsIgnoreCase("ethusdt") || b.getSymbol().equalsIgnoreCase("btcusdt"))
+                .filter(b -> b.getSymbol().equalsIgnoreCase(Symbol.ETHUSDT.name()) || b.getSymbol().equalsIgnoreCase(Symbol.BTCUSDT.name()))
                 .collect(Collectors.toList());
     }
 
@@ -131,7 +124,7 @@ public class AggregationService {
         List<Huobi> all = this.HuobiCall();
         // Filtering based on symbol
         return all.stream()
-                .filter(b -> b.getSymbol().equalsIgnoreCase("ethusdt") || b.getSymbol().equalsIgnoreCase("btcusdt"))
+                .filter(b -> b.getSymbol().equalsIgnoreCase(Symbol.ETHUSDT.name()) || b.getSymbol().equalsIgnoreCase(Symbol.BTCUSDT.name()))
                 .collect(Collectors.toList());
     }
 

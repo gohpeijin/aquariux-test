@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.AggregatedPrice;
-import com.example.demo.model.AggregatedPriceDTO;
 import com.example.demo.service.AggregationService;
 import org.springframework.web.bind.annotation.RestController;
 

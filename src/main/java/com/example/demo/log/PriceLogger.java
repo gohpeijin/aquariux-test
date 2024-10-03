@@ -1,5 +1,6 @@
 package com.example.demo.log;
 
+import com.example.demo.entity.AggregatedPrice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
@@ -7,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.example.demo.model.Binance;
 import com.example.demo.model.Huobi;
-import com.example.demo.model.AggregatedPriceDTO;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class PriceLogger {
     }
 
     // Method to log the aggregated prices
-    public void logAggregatedPrices(List<AggregatedPriceDTO> aggregatedPrices) {
+    public void logAggregatedPrices(List<AggregatedPrice> aggregatedPrices) {
         try {
             String json = objectMapper.writeValueAsString(aggregatedPrices);
             logger.info("Aggregated Prices: {}", json);

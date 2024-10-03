@@ -1,11 +1,11 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.demo.Enum.Source;
+import com.example.demo.Enum.Symbol;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,16 +19,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AggregatedPrice extends Auditable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String bidSource;
-  private String askSource;
-  private String symbol; // "ETHUSDT" or "BTCUSDT"
-  private BigDecimal bidPrice;
-  private BigDecimal bidQty;
-  private BigDecimal askPrice;
-  private BigDecimal askQty;
+    @Enumerated(EnumType.STRING)
+    private Source bidSource;
+
+    @Enumerated(EnumType.STRING)
+    private Source askSource;
+
+    @Enumerated(EnumType.STRING)
+    private Symbol symbol; // "ETHUSDT" or "BTCUSDT"
+
+    private BigDecimal bidPrice;
+    private BigDecimal bidQty;
+    private BigDecimal askPrice;
+    private BigDecimal askQty;
 
 }
