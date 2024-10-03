@@ -66,7 +66,7 @@ public class TransactionHistoryService {
         transactionHistoryRepository.deleteById(transactionId);
     }
 
-    // Method to find transactions by user ID and return DTOs
+    // Method to find transactions by user ID
     @Transactional(readOnly = true)
     public List<TransactionHistory> findByUserId(Long userId) {
         return transactionHistoryRepository.findByUser_UserId(userId);
@@ -114,12 +114,13 @@ public class TransactionHistoryService {
     
         switch (transaction.getTransactionType()) {
             case ETH_TO_USDT:
-                // Calculate how much ETH is needed to sell based on the buy amount of USDT
-                BigDecimal ethToSell = transaction.getBuyAmount().divide(ethUsdtPrice.getBidPrice(), 10, RoundingMode.HALF_UP);
-
+                // Buy amount is how many USDT the user wants to receive, calculate how much ETH to sell
+                BigDecimal usdtToReceive = transaction.getBuyAmount();
+                BigDecimal ethToSell = usdtToReceive.divide(ethUsdtPrice.getAskPrice(), 10, RoundingMode.HALF_UP);
+    
                 if (wallet.getEth().compareTo(ethToSell) >= 0) {
-                    wallet.setEth(wallet.getEth().subtract(ethToSell));
-                    wallet.setUsdt(wallet.getUsdt().add(transaction.getBuyAmount())); // Receive USDT from sale
+                    wallet.setEth(wallet.getEth().subtract(ethToSell)); // Sell ETH
+                    wallet.setUsdt(wallet.getUsdt().add(usdtToReceive)); // Receive USDT
                     res = performTransaction(transaction, wallet); // Save transaction record
                 } else {
                     throw new IllegalArgumentException("Insufficient ETH balance.");
@@ -127,10 +128,13 @@ public class TransactionHistoryService {
                 break;
     
             case USDT_TO_ETH:
-                if (wallet.getUsdt().compareTo(transaction.getBuyAmount()) >= 0) {
-                    wallet.setUsdt(wallet.getUsdt().subtract(transaction.getBuyAmount())); // Spend USDT
-                    BigDecimal ethToAdd = transaction.getBuyAmount().divide(ethUsdtPrice.getAskPrice(), 10, RoundingMode.HALF_UP);
-                    wallet.setEth(wallet.getEth().add(ethToAdd)); // Receive ETH from purchase
+                // Buy amount is how many ETH the user wants to buy
+                BigDecimal ethToBuy = transaction.getBuyAmount();
+                BigDecimal usdtNeeded = ethToBuy.multiply(ethUsdtPrice.getBidPrice());
+    
+                if (wallet.getUsdt().compareTo(usdtNeeded) >= 0) {
+                    wallet.setUsdt(wallet.getUsdt().subtract(usdtNeeded)); // Spend USDT
+                    wallet.setEth(wallet.getEth().add(ethToBuy)); // Receive ETH
                     res = performTransaction(transaction, wallet); // Save transaction record
                 } else {
                     throw new IllegalArgumentException("Insufficient USDT balance.");
@@ -138,11 +142,13 @@ public class TransactionHistoryService {
                 break;
     
             case BTC_TO_USDT:
-                // Calculate how much BTC is needed to sell based on the buy amount of USDT
-                BigDecimal btcToSell = transaction.getBuyAmount().divide(btcUsdtPrice.getBidPrice(), 10, RoundingMode.HALF_UP);
+                // Buy amount is how many USDT the user wants to receive, calculate how much BTC to sell
+                BigDecimal usdtToReceiveBTC = transaction.getBuyAmount();
+                BigDecimal btcToSell = usdtToReceiveBTC.divide(btcUsdtPrice.getAskPrice(), 10, RoundingMode.HALF_UP);
+    
                 if (wallet.getBtc().compareTo(btcToSell) >= 0) {
                     wallet.setBtc(wallet.getBtc().subtract(btcToSell)); // Sell BTC
-                    wallet.setUsdt(wallet.getUsdt().add(transaction.getBuyAmount())); // Receive USDT from sale
+                    wallet.setUsdt(wallet.getUsdt().add(usdtToReceiveBTC)); // Receive USDT
                     res = performTransaction(transaction, wallet); // Save transaction record
                 } else {
                     throw new IllegalArgumentException("Insufficient BTC balance.");
@@ -150,10 +156,13 @@ public class TransactionHistoryService {
                 break;
     
             case USDT_TO_BTC:
-                if (wallet.getUsdt().compareTo(transaction.getBuyAmount()) >= 0) {
-                    wallet.setUsdt(wallet.getUsdt().subtract(transaction.getBuyAmount())); // Spend USDT
-                    BigDecimal btcToAdd = transaction.getBuyAmount().divide(btcUsdtPrice.getAskPrice(), 10, RoundingMode.HALF_UP);
-                    wallet.setBtc(wallet.getBtc().add(btcToAdd)); // Receive BTC from purchase
+                // Buy amount is how many BTC the user wants to buy
+                BigDecimal btcToBuy = transaction.getBuyAmount();
+                BigDecimal usdtNeededForBTC = btcToBuy.multiply(btcUsdtPrice.getBidPrice());
+    
+                if (wallet.getUsdt().compareTo(usdtNeededForBTC) >= 0) {
+                    wallet.setUsdt(wallet.getUsdt().subtract(usdtNeededForBTC)); // Spend USDT
+                    wallet.setBtc(wallet.getBtc().add(btcToBuy)); // Receive BTC
                     res = performTransaction(transaction, wallet); // Save transaction record
                 } else {
                     throw new IllegalArgumentException("Insufficient USDT balance.");
@@ -166,6 +175,7 @@ public class TransactionHistoryService {
     
         return res;
     }
+    
 
     @Transactional
     public boolean performTransaction(TransactionHistory transaction, Wallet wallet) {

@@ -19,6 +19,9 @@ API link via postman: https://www.postman.com/avionics-astronomer-21090150/aquar
 3. trade based on the latest best aggregated price
 ![trade](screenshots/task3-trade.png)
 
+- insufficient balance
+![insufficient](screenshots/task3-insufficient-balance.png)
+
 4. retrieve the user’s cryptocurrencies wallet balance
 ![wallet-balance](screenshots/task4-wallet-balance.png)
 

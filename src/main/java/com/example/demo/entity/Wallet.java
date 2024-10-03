@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -25,6 +26,7 @@ public class Wallet extends Auditable{
 
     // One-to-Many relationship with TransactionHistory
     @OneToMany(mappedBy = "wallet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference 
     private List<TransactionHistory> transactions = new ArrayList<>();
 
     @Column(nullable = false)
